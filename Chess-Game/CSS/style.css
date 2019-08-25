@@ -1,0 +1,72 @@
+.white {
+	background-color: white;
+	width: 75px;
+	height: 75px;
+ 	float: left
+}
+.black1 {
+	background-color: black;
+	width: 75px;
+	height: 75px;
+	float: left
+}
+.black2 {
+	background-color: black;
+	width: 75px;
+	height: 75px;
+	float: left
+}
+.whitemid {
+	background-color: white;
+	width: 75px;
+	height: 75px;
+ 	float: left
+}
+.blackmid {
+	background-color: black;
+	width: 75px;
+	height: 75px;
+	float: left
+}
+#black {
+	background-color: black;
+	width: 75px;
+	height: 75px;
+	float: left
+}
+.overallBoard {
+	width: 800px;
+	height: 800px;
+	margin: 0 auto;
+/*	border: 2px black solid;*/
+}
+.row {
+	width: 600px;
+	height: 75px;
+
+}
+.rowmid {
+	width: 600px;
+	height: 75px;
+
+}
+.board {
+	border: 2px black solid;
+	width: 600px;
+}
+.blackpiece {
+  height: 70px;
+  width: 70px;
+  background-color: red;
+  border-radius: 50%;
+  margin: 3px;
+  display: inline-block;
+}
+.whitepiece {
+  height: 70px;
+  width: 70px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 3px;
+  display: inline-block;
+}
