@@ -63,6 +63,40 @@ function knightMoveForwardRight(coord){
 	return secondCoord;
 };
 
+function knightMoveForwardLeft(coord){
+	firstCoord = coord;
+	let num = parseInt(firstCoord[1]) + 2;
+	let letter = firstCoord[0];
+	switch (letter) {
+		case "B" :
+		letter = "A"
+		break;
+		case "C" :
+		letter = "B"
+		break;
+		case "D" :
+		letter = "C"
+		break;
+		case "E" :
+		letter = "D"
+		break;
+		case "F" :
+		letter = "E"
+		break;
+		case "G" :
+		letter = "F"
+		break;
+		case "H" :
+		letter = "G"
+		break;
+		default :
+		console.log("Not valid")
+	}
+	let secondCoord = letter + num;
+	return secondCoord;
+};
+
+console.log(pieces[1] + " " + knightMoveForwardLeft("B1"))
 console.log(pieces[1] + " " + knightMoveForwardRight("B1"))
 console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
 
