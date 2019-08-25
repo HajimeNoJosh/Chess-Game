@@ -1,32 +1,70 @@
 // let origBoard = [
-// [0,1,0,1,0,1,0,1],
-// [1,0,1,0,1,0,1,0],
-// [0,1,0,1,0,1,0,1],
+// [0,0,0,0,0,0,0,0],
+// [1,1,1,1,1,1,1,1],
 // [0,0,0,0,0,0,0,0],
 // [0,0,0,0,0,0,0,0],
-// [2,0,2,0,2,0,2,0],
-// [0,2,0,2,0,2,0,2],
-// [2,0,2,0,2,0,2,0]
+// [0,0,0,0,0,0,0,0],
+// [0,0,0,0,0,0,0,0],
+// [1,1,1,1,1,1,1,1],
+// [0,0,0,0,0,0,0,0]
 // ];
 
-// a - h
-// 1 - 8
+// a - h bottom row
+// 1 - 8 sides
+let firstMove = 2;
 
 
-function oneMove()  {
-firstCoord = "A2";
-let num = parseInt(firstCoord[1]) + 1;
-let secondCoord = firstCoord[0] + num;
-console.log(secondCoord); 
+let pieces = ["pawn", "knight"];
+
+function oneMoveForward(coord)  {
+	firstCoord = coord;
+	let num = parseInt(firstCoord[1]) + 1;
+	let secondCoord = firstCoord[0] + num;
+	return secondCoord; 
 };
 
-oneMove();
-
-function twoMove()  {
-firstCoord = "A2";
-let num = parseInt(firstCoord[1]) + 2;
-let secondCoord = firstCoord[0] + num;
-console.log(secondCoord); 
+function twoPawnMoveForward(coord)  {
+	firstCoord = coord;
+	let num = parseInt(firstCoord[1]) + 2;
+	let secondCoord = firstCoord[0] + num;
+	return secondCoord; 
 };
 
-twoMove();
+function knightMoveForwardRight(coord){
+	firstCoord = coord;
+	let num = parseInt(firstCoord[1]) + 2;
+	let letter = firstCoord[0];
+	switch (letter) {
+		case "A" :
+		letter = "B"
+		break;
+		case "B" :
+		letter = "C"
+		break;
+		case "C" :
+		letter = "D"
+		break;
+		case "D" :
+		letter = "E"
+		break;
+		case "E" :
+		letter = "F"
+		break;
+		case "F" :
+		letter = "G"
+		break;
+		case "G" :
+		letter = "H"
+		break;
+		default :
+		console.log("Not valid")
+	} 
+	let secondCoord = letter + num;
+	return secondCoord;
+};
+
+console.log(pieces[1] + " " + knightMoveForwardRight("B1"))
+console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+
+
+
