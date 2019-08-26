@@ -11,27 +11,38 @@
 
 // a - h bottom row
 // 1 - 8 sides
-let firstMove = 2;
 
+let firstMove = 0;
 
 let pieces = ["pawn", "knight", "Bishop"];
 
+const lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"];
+const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
+
+
 function oneMoveForward(coord)  {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 1;
 	let secondCoord = firstCoord[0] + num;
 	return secondCoord; 
 };
 
 function twoPawnMoveForward(coord)  {
-	firstCoord = coord;
+	if (firstMove === 0) {
+	firstMove = firstMove + 1;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 2;
 	let secondCoord = firstCoord[0] + num;
-	return secondCoord; 
+	return secondCoord;  
+	} else {
+		throw "Invalid Move";
+	}
 };
 
+
+
 function knightMoveTwoForwardRight(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 2;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -64,7 +75,7 @@ function knightMoveTwoForwardRight(coord) {
 };
 
 function knightMoveTwoForwardLeft(coord) { 
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 2;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -97,7 +108,7 @@ function knightMoveTwoForwardLeft(coord) {
 };
 
 function knightMoveOneForwardLeft(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 1;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -127,7 +138,7 @@ function knightMoveOneForwardLeft(coord) {
 };
 
 function knightMoveOneForwardRight(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + 1;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -157,7 +168,7 @@ function knightMoveOneForwardRight(coord) {
 };
 
 function knightMoveOneDownLeft(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - 1;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -187,7 +198,7 @@ function knightMoveOneDownLeft(coord) {
 };
 
 function knightMoveOneDownRight(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - 1;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -218,7 +229,7 @@ function knightMoveOneDownRight(coord) {
 
 
 function knightMoveTwoDownRight(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - 2;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -252,7 +263,7 @@ function knightMoveTwoDownRight(coord) {
 
 
 function knightMoveTwoDownLeft(coord) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - 2;
 	let letter = firstCoord[0];
 	switch (letter) {
@@ -284,11 +295,10 @@ function knightMoveTwoDownLeft(coord) {
 	return secondCoord;
 };
 
-let lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"];
-let lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
+
 
 function bishopMoveForwardRightDiagonal(coord, numberOfMoves) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
@@ -304,7 +314,7 @@ function bishopMoveForwardRightDiagonal(coord, numberOfMoves) {
 };
 
 function bishopMoveForwardLeftDiagonal(coord, numberOfMoves) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
@@ -320,7 +330,7 @@ function bishopMoveForwardLeftDiagonal(coord, numberOfMoves) {
 };
 
 function bishopMoveBackwardLeftDiagonal(coord, numberOfMoves) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
@@ -336,7 +346,7 @@ function bishopMoveBackwardLeftDiagonal(coord, numberOfMoves) {
 };
 
 function bishopMoveBackwardRightDiagonal(coord, numberOfMoves) {
-	firstCoord = coord;
+	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
@@ -351,6 +361,9 @@ function bishopMoveBackwardRightDiagonal(coord, numberOfMoves) {
 
 };
 
+try {
+console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
 console.log(pieces[2] + " " + bishopMoveBackwardRightDiagonal("A1", 7))
 console.log(pieces[2] + " " + bishopMoveBackwardLeftDiagonal("E4", 3))
 console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("B2", 1))
@@ -360,10 +373,12 @@ console.log(pieces[1] + " " + knightMoveTwoDownLeft("E5"));
 console.log(pieces[1] + " " + knightMoveOneDownRight("E5"));
 console.log(pieces[1] + " " + knightMoveOneDownLeft("E5"));
 console.log(pieces[1] + " " + knightMoveOneForwardRight("A1"));
-console.log(pieces[1] + " " + knightMoveOneForwardLeft("H1"));
+console.log(pieces[1] + " " + knightMoveOneForwardLeft("C1"));
 console.log(pieces[1] + " " + knightMoveTwoForwardLeft("B1"));
 console.log(pieces[1] + " " + knightMoveTwoForwardRight("B1"));
-console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+}
 
-
+catch(err) {
+	console.log(err);
+}
 
