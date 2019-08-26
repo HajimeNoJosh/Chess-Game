@@ -1,23 +1,29 @@
-// let origBoard = [
-// [0,0,0,0,0,0,0,0],
-// [1,1,1,1,1,1,1,1],
-// [0,0,0,0,0,0,0,0],
-// [0,0,0,0,0,0,0,0],
-// [0,0,0,0,0,0,0,0],
-// [0,0,0,0,0,0,0,0],
-// [1,1,1,1,1,1,1,1],
-// [0,0,0,0,0,0,0,0]
-// ];
+let origBoard = [
+["R","N","B","Q","K","B","N","R"],
+["P","P","P","P","P","P","P","P"],
+[" "," "," "," "," "," "," "," "],
+[" "," "," "," "," "," "," "," "],
+[" "," "," "," "," "," "," "," "],
+[" "," "," "," "," "," "," "," "],
+["P","P","P","P","P","P","P","P"],
+["R","N","B","Q","K","B","N","R"]
+];
 
+let coordBoard = [
+["A8","B8","C8","D8","E8","F8","G8","H8"],
+["A7","B7","C7","D7","E7","F7","G7","H7"],
+["A6","B6","C6","D6","E6","F6","G6","H6"],
+["A5","B5","C5","D5","E5","F5","G5","H5"],
+["A4","B4","C4","D4","E4","F4","G4","H4"],
+["A3","B3","C3","D3","E3","F3","G3","H3"],
+["A2","B2","C2","D2","E2","F2","G2","H2"],
+["A1","B1","C1","D1","E1","F1","G1","H1"],
+]
 // a - h bottom row
 // 1 - 8 sides
 
-// let listItems = document.querySelectorAll('.black2');
-
-// for (var i = 0; i < listItems.length; i += 1) {
-// listItems[i].className = 'blackPawn';
-// };
-
+console.log(origBoard);
+// console.log(origBoard[6][4]);
 
 let firstMove = 0;
 
@@ -30,12 +36,35 @@ const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
 
 function oneMoveForward(coord)  {
 	const firstCoord = coord;
-	let num = parseInt(firstCoord[1]) + 1;
-	let secondCoord = firstCoord[0] + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord; 
+	for (i = 0; i < coordBoard.length; i++){
+		for(j = 0; j < coordBoard[i].length; j++){
+			if (firstCoord === coordBoard[i][j]){
+				let firstCoordPosition = String(i) 
+				let secondCoordPosition = String(j)
+				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition]
+				if (checkingForPiece === "R" || "N" || "B" || "Q" || "K" || "P"){
+					origBoard[firstCoordPosition][secondCoordPosition] = " "
+				} else {
+					throw "Invalid Move"
+				}
+				let num = parseInt(firstCoord[1]) + 1;
+				let secondCoord = firstCoord[0] + num;
+				for (i = 0; i < coordBoard.length; i++){
+					for(j = 0; j < coordBoard[i].length; j++){
+						if (secondCoord === coordBoard[i][j]){
+							let firstCoordPosition = String(i) 
+							let secondCoordPosition = String(j)
+							origBoard[firstCoordPosition][secondCoordPosition] = checkingForPiece;
+						} 
+					} 
+				}
+				if (num > 8 || num < 1) {
+					throw "Invalid Move"
+				} else {
+					return secondCoord;
+				}
+			}
+		}
 	}
 };
 
@@ -646,7 +675,6 @@ function kingMoveForward(coord) {
 function kingMoveBackward(coord) {
 	const firstCoord = coord;
 	let num = parseInt(firstCoord[1]) - 1;
-	console.log()
 	num = Math.abs(num);
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
@@ -661,12 +689,12 @@ function kingMoveBackward(coord) {
 
 
 try {
-console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-console.log(pieces[0] + " " + twoPawnMoveBackward("E7"));
-console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
-console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
-console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
-console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
+// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+// console.log(pieces[0] + " " + twoPawnMoveBackward("E7"));
+// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
+// console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
+// console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
+// console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
 
 	// console.log(pieces[5] + " " + kingMoveRight("E8"));
 	// console.log(pieces[5] + " " + kingMoveBackward("E2"));
@@ -701,7 +729,7 @@ console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
 	// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("B1"));
 	// console.log(pieces[1] + " " + knightMoveTwoForwardRight("A1"));
 	// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-	// console.log(pieces[0] + " " + oneMoveForward("E2"));
+	console.log(pieces[0] + " " + oneMoveForward("E2"));
 // console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
 }
 
