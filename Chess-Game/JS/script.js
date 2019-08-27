@@ -22,20 +22,14 @@ let coordBoard = [
 // a - h bottom row
 // 1 - 8 sides
 
-console.log(origBoard);
-// console.log(origBoard[6][4]);
-
-let firstMove = 0;
+console.log(origBoard)
 
 let pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
 
 const lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
 
-
-
-function oneMoveForward(coord)  {
-	const firstCoord = coord;
+function getCoordForOrigBoard(firstCoord) {
 	for (i = 0; i < coordBoard.length; i++){
 		for(j = 0; j < coordBoard[i].length; j++){
 			if (firstCoord === coordBoard[i][j]){
@@ -47,96 +41,105 @@ function oneMoveForward(coord)  {
 				} else {
 					throw "Invalid Move"
 				}
-				let num = parseInt(firstCoord[1]) + 1;
-				let secondCoord = firstCoord[0] + num;
-				for (i = 0; i < coordBoard.length; i++){
-					for(j = 0; j < coordBoard[i].length; j++){
-						if (secondCoord === coordBoard[i][j]){
-							let firstCoordPosition = String(i) 
-							let secondCoordPosition = String(j)
-							origBoard[firstCoordPosition][secondCoordPosition] = checkingForPiece;
-						} 
-					} 
-				}
-				if (num > 8 || num < 1) {
-					throw "Invalid Move"
-				} else {
-					return secondCoord;
-				}
+				return checkingForPiece
 			}
 		}
 	}
 };
 
-function twoPawnMoveForward(coord)  {
-	if (firstMove === 0) {
-		firstMove = firstMove + 1;
-	} else {
-		throw "Invalid Move";
+function getSecondCoordForOrigBoard(secondCoord, checkingForPiece){
+	for (i = 0; i < coordBoard.length; i++){
+		for(j = 0; j < coordBoard[i].length; j++){
+			if (secondCoord === coordBoard[i][j]){
+				let firstCoordPosition = String(i) 
+				let secondCoordPosition = String(j)
+				origBoard[firstCoordPosition][secondCoordPosition] = checkingForPiece;
+			} 
+		} 
 	}
+};
+
+function checkingCoordsNum(num, secondCoord) {
+	if (num > 8 || num < 1) {
+		throw "Invalid Move"
+	} else {
+		return secondCoord
+	}
+};
+
+
+
+
+
+function oneMoveForward(coord)  {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+	let num = parseInt(firstCoord[1]) + 1;
+	let secondCoord = firstCoord[0] + num;
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+
+};
+
+
+function twoPawnMoveForward(coord)  {
+	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
 	let secondCoord = firstCoord[0] + num;
-	if (num > 8 || num < 1){
-		throw "InvalidMove"
-	} else {
-		return secondCoord;  
-	}
-
+	checkingCoordsNum(num, secondCoord)
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 };
 
 function oneMoveBackward(coord)  {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	let secondCoord = firstCoord[0] + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord; 
+	checkingCoordsNum(num, secondCoord);
+
+	for (i = 0; i < coordBoard.length; i++){
+		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+
 	}
 };
 
 function twoPawnMoveBackward(coord)  {
-	// if (firstMove === 0) {
-	// 	firstMove = firstMove + 1;
-	// } else {
-	// 	throw "Invalid Move";
-	// }
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 2;
 	let secondCoord = firstCoord[0] + num;
-	if (num > 8 || num < 1){
-		throw "InvalidMove"
-	} else {
-		return secondCoord;  
-	}
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
+}
 
-};
 
 
 
 
 function knightMoveTwoForwardRight(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		let letter = firstCoord[0];
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+	let letter = firstCoord[0];
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-	
-};
+}
+
 
 function knightMoveTwoForwardLeft(coord) { 
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
 	let letter = firstCoord[0];
 	if (num > 8 || num < 1) {
@@ -147,556 +150,616 @@ function knightMoveTwoForwardLeft(coord) {
 				let newLetter = i - 1;
 				let letter = lettersForwardRight[newLetter];
 				let secondCoord = letter + num;
+				checkingCoordsNum(num, secondCoord);
+				getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
 				return secondCoord;
 			}
 		}
 	}
-};
+}
+
 
 function knightMoveOneForwardLeft(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i - 2;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i - 2;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
 };
+
 
 function knightMoveOneForwardRight(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 2;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 2;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+
+			return secondCoord;
 		}
 	}
-};
+}
+
 
 function knightMoveOneDownLeft(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i - 2;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i - 2;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
 
 function knightMoveOneDownRight(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 2;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 2;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
+
 		}
 	}
-};
+}
 
 
 function knightMoveTwoDownRight(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 2;
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
 
 
 function knightMoveTwoDownLeft(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 2;
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i - 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i - 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 
 
 function bishopMoveForwardRightDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
+}
 
-};
+
 
 function bishopMoveForwardLeftDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function bishopMoveBackwardLeftDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
+}
 
-};
+
 
 function bishopMoveBackwardRightDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
+}
 
-};
 
 function rookMoveForward(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
-};
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	checkingCoordsNum()
+	return secondCoord
+}
+
 
 function rookMoveBackward(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	console.log()
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
-};
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	checkingCoordsNum()
+	return secondCoord
+}
+
 
 function rookMoveRight(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 
 function rookMoveLeft(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveLeft(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveRight(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveForwardRightDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveForwardLeftDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveBackwardLeftDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveBackwardRightDiagonal(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + numberOfMoves;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + numberOfMoves;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function queenMoveForward(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + numberOfMoves;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
-};
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord
+}
+
 
 function queenMoveBackward(coord, numberOfMoves) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - numberOfMoves;
-	console.log()
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
-};
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord
+}
+
 
 function kingMoveLeft(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + 1
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 1
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
 
 function kingMoveRight(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = firstCoord[1];
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function kingMoveForwardRightDiagonal(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function kingMoveForwardLeftDiagonal(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
 
 function kingMoveBackwardLeftDiagonal(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardLeft.length; i++) {
-			if (letter === lettersForwardLeft[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardLeft[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
 
 function kingMoveBackwardRightDiagonal(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i + 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				return secondCoord;
-			}
+
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			return secondCoord;
 		}
 	}
-};
+}
+
+
 
 function kingMoveForward(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	num = Math.abs(num);
+
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
-};
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord
+}
+
 
 function kingMoveBackward(coord) {
 	const firstCoord = coord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		return secondCoord;
-	}
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord
 };
 
 
 
 
 try {
-// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-// console.log(pieces[0] + " " + twoPawnMoveBackward("E7"));
-// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
-// console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
-// console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
-// console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
-
-	// console.log(pieces[5] + " " + kingMoveRight("E8"));
+	console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+	console.log(pieces[0] + " " + twoPawnMoveBackward("E7"));
+	console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
+	console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
+	console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
+	console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
+	console.log(pieces[5] + " " + kingMoveRight("E8"));
 	// console.log(pieces[5] + " " + kingMoveBackward("E2"));
 	// console.log(pieces[5] + " " + kingMoveForward("E7"));
 	// console.log(pieces[5] + " " + kingMoveBackwardRightDiagonal("E4"));
@@ -726,14 +789,14 @@ try {
 	// console.log(pieces[1] + " " + knightMoveOneDownLeft("E5"));
 	// console.log(pieces[1] + " " + knightMoveOneForwardRight("A1"));
 	// console.log(pieces[1] + " " + knightMoveOneForwardLeft("C1"));
-	// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("B1"));
+	//  console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
 	// console.log(pieces[1] + " " + knightMoveTwoForwardRight("A1"));
 	// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-	console.log(pieces[0] + " " + oneMoveForward("E2"));
-// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-}
+	 // console.log(pieces[0] + " " + oneMoveForward("E2"));
+	 // console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+	}
 
-catch(err) {
-	console.log(err);
-}
+	catch(err) {
+		console.log(err);
+	}
 
