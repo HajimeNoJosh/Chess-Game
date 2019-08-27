@@ -18,29 +18,34 @@ let coordBoard = [
 ["A3","B3","C3","D3","E3","F3","G3","H3"],
 ["A2","B2","C2","D2","E2","F2","G2","H2"],
 ["A1","B1","C1","D1","E1","F1","G1","H1"],
-]
+];
 // a - h bottom row
 // 1 - 8 sides
+
+
+
+// working my way through DRY coding
+
 
 console.log(origBoard)
 
 let pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
-
 const lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
+
 
 function getCoordForOrigBoard(firstCoord) {
 	for (i = 0; i < coordBoard.length; i++){
 		for(j = 0; j < coordBoard[i].length; j++){
 			if (firstCoord === coordBoard[i][j]){
-				let firstCoordPosition = String(i) 
-				let secondCoordPosition = String(j)
-				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition]
+				let firstCoordPosition = String(i); 
+				let secondCoordPosition = String(j);
+				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition];
 				if (checkingForPiece === "R" || "N" || "B" || "Q" || "K" || "P"){
 					origBoard[firstCoordPosition][secondCoordPosition] = " "
 				} else {
 					throw "Invalid Move"
-				}
+				};
 				return checkingForPiece
 			}
 		}
@@ -67,8 +72,27 @@ function checkingCoordsNum(num, secondCoord) {
 	}
 };
 
+function makeNewLetterOneForward(letter, num) {
+	for (i = 0; i < lettersForwardRight.length; i++) {
+		if (letter === lettersForwardRight[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardRight[newLetter];
+			let secondCoord = letter + num;
+			return secondCoord
+		}
+	}
+};
 
-
+function makeNewLetterOneBackward(letter, num) {
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 1;
+			let letter = lettersForwardLeft[newLetter];
+			let secondCoord = letter + num;
+			return secondCoord
+		}
+	}
+};
 
 
 function oneMoveForward(coord)  {
@@ -78,7 +102,7 @@ function oneMoveForward(coord)  {
 	let secondCoord = firstCoord[0] + num;
 	checkingCoordsNum(num, secondCoord);
 	getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
-
+	return secondCoord
 };
 
 
@@ -98,11 +122,9 @@ function oneMoveBackward(coord)  {
 	let num = parseInt(firstCoord[1]) - 1;
 	let secondCoord = firstCoord[0] + num;
 	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord
 
-	for (i = 0; i < coordBoard.length; i++){
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-
-	}
 };
 
 function twoPawnMoveBackward(coord)  {
@@ -116,25 +138,17 @@ function twoPawnMoveBackward(coord)  {
 }
 
 
-
-
-
 function knightMoveTwoForwardRight(coord) {
 	const firstCoord = coord;
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
 	let letter = firstCoord[0];
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardRight[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneForward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
+
 
 
 function knightMoveTwoForwardLeft(coord) { 
@@ -142,21 +156,12 @@ function knightMoveTwoForwardLeft(coord) {
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
 	let letter = firstCoord[0];
-	if (num > 8 || num < 1) {
-		throw "Invalid Move"
-	} else {
-		for (i = 0; i < lettersForwardRight.length; i++) {
-			if (letter === lettersForwardRight[i]) {
-				let newLetter = i - 1;
-				let letter = lettersForwardRight[newLetter];
-				let secondCoord = letter + num;
-				checkingCoordsNum(num, secondCoord);
-				getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-				return secondCoord;
-			}
-		}
-	}
+	let secondCoord = makeNewLetterOneBackward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
+
 
 
 function knightMoveOneForwardLeft(coord) {
@@ -164,10 +169,10 @@ function knightMoveOneForwardLeft(coord) {
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	let letter = firstCoord[0];
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i - 2;
-			let letter = lettersForwardRight[newLetter];
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 2;
+			let letter = lettersForwardLeft[newLetter];
 			let secondCoord = letter + num;
 			checkingCoordsNum(num, secondCoord);
 			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
@@ -204,10 +209,10 @@ function knightMoveOneDownLeft(coord) {
 
 	let letter = firstCoord[0];
 
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i - 2;
-			let letter = lettersForwardRight[newLetter];
+	for (i = 0; i < lettersForwardLeft.length; i++) {
+		if (letter === lettersForwardLeft[i]) {
+			let newLetter = i + 2;
+			let letter = lettersForwardLeft[newLetter];
 			let secondCoord = letter + num;
 			checkingCoordsNum(num, secondCoord);
 			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
@@ -243,18 +248,11 @@ function knightMoveTwoDownRight(coord) {
 	let num = parseInt(firstCoord[1]) - 2;
 
 	let letter = firstCoord[0];
-
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardRight[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
-}
+	let secondCoord = makeNewLetterOneForward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
+};
 
 
 function knightMoveTwoDownLeft(coord) {
@@ -603,17 +601,10 @@ function kingMoveLeft(coord) {
 	let num = firstCoord[1];
 
 	let letter = firstCoord[0];
-
-	for (i = 0; i < lettersForwardLeft.length; i++) {
-		if (letter === lettersForwardLeft[i]) {
-			let newLetter = i + 1
-			let letter = lettersForwardLeft[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneBackward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
 
 
@@ -624,17 +615,12 @@ function kingMoveRight(coord) {
 
 	let letter = firstCoord[0];
 
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardRight[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneForward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
+
 
 
 
@@ -646,16 +632,11 @@ function kingMoveForwardRightDiagonal(coord) {
 
 	let letter = firstCoord[0];
 
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardRight[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+
+	let secondCoord = makeNewLetterOneForward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
 
 
@@ -666,17 +647,10 @@ function kingMoveForwardLeftDiagonal(coord) {
 	let num = parseInt(firstCoord[1]) + 1;
 	num = Math.abs(num);
 	let letter = firstCoord[0];
-
-	for (i = 0; i < lettersForwardLeft.length; i++) {
-		if (letter === lettersForwardLeft[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardLeft[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneBackward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
 
 
@@ -685,19 +659,11 @@ function kingMoveBackwardLeftDiagonal(coord) {
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	num = Math.abs(num);
-
 	let letter = firstCoord[0];
-
-	for (i = 0; i < lettersForwardLeft.length; i++) {
-		if (letter === lettersForwardLeft[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardLeft[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneBackward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
 
 
@@ -706,20 +672,13 @@ function kingMoveBackwardRightDiagonal(coord) {
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) - 1;
 	num = Math.abs(num);
-
 	let letter = firstCoord[0];
-
-	for (i = 0; i < lettersForwardRight.length; i++) {
-		if (letter === lettersForwardRight[i]) {
-			let newLetter = i + 1;
-			let letter = lettersForwardRight[newLetter];
-			let secondCoord = letter + num;
-			checkingCoordsNum(num, secondCoord);
-			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-			return secondCoord;
-		}
-	}
+	let secondCoord = makeNewLetterOneForward(letter, num);
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	return secondCoord;
 }
+
 
 
 
@@ -728,7 +687,6 @@ function kingMoveForward(coord) {
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	num = Math.abs(num);
-
 	let letter = firstCoord[0];
 	let secondCoord = letter + num;
 	checkingCoordsNum(num, secondCoord);
@@ -753,13 +711,14 @@ function kingMoveBackward(coord) {
 
 
 try {
-	console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
-	console.log(pieces[0] + " " + twoPawnMoveBackward("E7"));
-	console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
-	console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
-	console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
-	console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
-	console.log(pieces[5] + " " + kingMoveRight("E8"));
+	// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
+	// console.log(pieces[0] + " " + oneMoveBackward("E7"));
+	// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
+	// console.log(pieces[1] + " " + knightMoveTwoDownRight("B8"));
+	// console.log(pieces[2] + " " + bishopMoveForwardLeftDiagonal("F1", 4));
+	// console.log(pieces[1] + " " + knightMoveTwoDownLeft("G8"));
+	// console.log(pieces[5] + " " + kingMoveRight("E8"));
+	// console.log(pieces[1] + " " + knightMoveTwoForwardRight("B1"));
 	// console.log(pieces[5] + " " + kingMoveBackward("E2"));
 	// console.log(pieces[5] + " " + kingMoveForward("E7"));
 	// console.log(pieces[5] + " " + kingMoveBackwardRightDiagonal("E4"));
@@ -788,9 +747,9 @@ try {
 	// console.log(pieces[1] + " " + knightMoveOneDownRight("E5"));
 	// console.log(pieces[1] + " " + knightMoveOneDownLeft("E5"));
 	// console.log(pieces[1] + " " + knightMoveOneForwardRight("A1"));
-	// console.log(pieces[1] + " " + knightMoveOneForwardLeft("C1"));
+	console.log(pieces[1] + " " + knightMoveOneForwardLeft("C1"));
 	//  console.log(pieces[1] + " " + knightMoveTwoForwardLeft("G1"));
-	// console.log(pieces[1] + " " + knightMoveTwoForwardRight("A1"));
+
 	// console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
 	 // console.log(pieces[0] + " " + oneMoveForward("E2"));
 	 // console.log(pieces[0] + " " + twoPawnMoveForward("E2"));
