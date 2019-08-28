@@ -31,22 +31,30 @@ const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
 
 
 function getCoordForOrigBoard(firstCoord) {
-	for (i = 0; i < coordBoard.length; i++){
-		for(j = 0; j < coordBoard[i].length; j++){
-			if (firstCoord === coordBoard[i][j]){
+	for (i = 0; i < coordBoard.length; i++) {
+		for(j = 0; j < coordBoard[i].length; j++) {
+			if (firstCoord === coordBoard[i][j]) {
 				let firstCoordPosition = String(i); 
 				let secondCoordPosition = String(j);
 				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition];
+				let pieceBeginningLetter = checkingForPiece[0];
+/*
+take the first letter of the piece, check in between the first and second coords to see if there is another piece with the same first letter
+if so invalid
+if not move there
+*/
 				if (checkingForPiece === "BlR" || "BlN" || "BlB" || "BlQ" || "BlK" || "BlP" || "WhP" || "WhR" || "WhN" || "WhB" || "WhK" || "WhQ"){
-					origBoard[firstCoordPosition][secondCoordPosition] = " "
+					origBoard[firstCoordPosition][secondCoordPosition] = "   "
 				} else {
 					throw "Invalid Move"
 				};
 				return checkingForPiece
+				return pieceBeginningLetter
 			}
 		}
 	}
 };
+
 
 function getSecondCoordForOrigBoard(secondCoord, checkingForPiece){
 	for (i = 0; i < coordBoard.length; i++){
@@ -135,15 +143,17 @@ function makeNewLetterXBackward(letter, num, numberOfMoves) {
 	}
 };
 
+
 function oneMoveForward(coord)  {
 	const firstCoord = coord;
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 1;
 	let secondCoord = firstCoord[0] + num;
+	let pieceBeginningLetter = checkingForPiece[0];
 	checkingCoordsNum(num, secondCoord);
 	getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
 	return secondCoord
-};
+}
 
 
 function twoPawnMoveForward(coord)  {
@@ -178,7 +188,25 @@ function twoPawnMoveBackward(coord)  {
 }
 
 
-function knightMoveTwoForwardRight(coord) {
+var knightWhiteOne = {
+	color: "white",
+	pieceType: "knight",
+	currentCoord: "B1",
+	knightMoveTwoForwardRight: function () {
+	const firstCoord = this.currentCoord;
+	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+	let num = parseInt(firstCoord[1]) + 2;
+	let letter = firstCoord[0];
+	let secondCoord = makeNewLetterOneForward(letter, num)
+	checkingCoordsNum(num, secondCoord);
+	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+	this.currentCoord = secondCoord
+	return this.currentCoord
+}
+};
+console.log(knightWhiteOne.knightMoveTwoForwardRight());
+
+function knightMoveTwoForwardRight() {
 	const firstCoord = coord;
 	let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
 	let num = parseInt(firstCoord[1]) + 2;
@@ -186,7 +214,7 @@ function knightMoveTwoForwardRight(coord) {
 	let secondCoord = makeNewLetterOneForward(letter, num)
 	checkingCoordsNum(num, secondCoord);
 	getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-	return secondCoord;
+	this.coord = currentCoord
 }
 
 
@@ -646,7 +674,7 @@ try {
 	// console.log(pieces[1] + " " + knightMoveOneForwardLeft("E2")); //C3
 	// console.log(pieces[1] + " " + knightMoveTwoForwardLeft("E2")); //D4
 	// console.log(pieces[0] + " " + twoPawnMoveForward("E2")); //E4
-	// console.log(pieces[0] + " " + oneMoveForward("E2")); //E3
+	console.log(pieces[0] + " " + oneMoveForward("E2")); //E3
 	}
 
 	catch(err) {
