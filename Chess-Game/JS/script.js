@@ -1,12 +1,12 @@
 let origBoard = [
-["R","N","B","Q","K","B","N","R"],
-["P","P","P","P","P","P","P","P"],
-[" "," "," "," "," "," "," "," "],
-[" "," "," "," "," "," "," "," "],
-[" "," "," "," "," "," "," "," "],
-[" "," "," "," "," "," "," "," "],
-["P","P","P","P","P","P","P","P"],
-["R","N","B","Q","K","B","N","R"]
+["BlR","BlN","BlB","BlQ","BlK","BlB","BlN","BlR"],
+["BlP","BlP","BlP","BlP","BlP","BlP","BlP","BlP"],
+["   ","   ","   ","   ","   ","   ","   ","   "],
+["   ","   ","   ","   ","   ","   ","   ","   "],
+["   ","   ","   ","   ","   ","   ","   ","   "],
+["   ","   ","   ","   ","   ","   ","   ","   "],
+["WhP","WhP","WhP","WhP","WhP","WhP","WhP","WhP"],
+["WhR","WhN","WhB","WhQ","WhK","WhB","WhN","WhR"]
 ];
 
 let coordBoard = [
@@ -19,6 +19,7 @@ let coordBoard = [
 ["A2","B2","C2","D2","E2","F2","G2","H2"],
 ["A1","B1","C1","D1","E1","F1","G1","H1"],
 ];
+
 // a - h bottom row
 // 1 - 8 sides
 
@@ -36,7 +37,7 @@ function getCoordForOrigBoard(firstCoord) {
 				let firstCoordPosition = String(i); 
 				let secondCoordPosition = String(j);
 				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition];
-				if (checkingForPiece === "R" || "N" || "B" || "Q" || "K" || "P"){
+				if (checkingForPiece === "BlR" || "BlN" || "BlB" || "BlQ" || "BlK" || "BlP" || "WhP" || "WhR" || "WhN" || "WhB" || "WhK" || "WhQ"){
 					origBoard[firstCoordPosition][secondCoordPosition] = " "
 				} else {
 					throw "Invalid Move"
