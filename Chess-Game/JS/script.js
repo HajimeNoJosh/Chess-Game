@@ -1,12 +1,12 @@
 let origBoard = [
-["BlR","BlN","BlB","BlQ","BlK","BlB","BlN","BlR"],
-["BlP","BlP","BlP","BlP","BlP","BlP","BlP","BlP"],
-["   ","   ","   ","   ","   ","   ","   ","   "],
-["   ","   ","   ","   ","   ","   ","   ","   "],
-["   ","   ","   ","   ","   ","   ","   ","   "],
-["   ","   ","   ","   ","   ","   ","   ","   "],
-["WhP","WhP","WhP","WhP","WhP","WhP","WhP","WhP"],
-["WhR","WhN","WhB","WhQ","WhK","WhB","WhN","WhR"]
+["BlR1","BlN1","BlB1","BlQ1","BlK1","BlB2","BlN2","BlR2"],
+["BlP1","BlP2","BlP3","BlP4","BlP5","BlP6","BlP7","BlP8"],
+["    ","    ","    ","    ","    ","    ","    ","    "],
+["    ","    ","    ","    ","    ","    ","    ","    "],
+["    ","    ","    ","    ","    ","    ","    ","    "],
+["    ","    ","    ","    ","    ","    ","    ","    "],
+["WhP1","WhP2","WhP3","WhP4","Whp5","WhP6","WhP7","WhP8"],
+["WhR1","WhN1","WhB1","WhQ1","WhK1","WhB2","WhN2","WhR2"]
 ];
 
 let coordBoard = [
@@ -25,42 +25,47 @@ let coordBoard = [
 
 console.log(origBoard)
 
-let pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
-const lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"];
-const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"];
 
+const lettersForwardRight = ["A", "B", "C", "D", "E", "F", "G", "H"]; //This comes in handy for changing the coorinates of moving pieces
+const lettersForwardLeft = ["H", "G", "F", "E", "D", "C", "B", "A"]; //Same as previous but for pieces moving backwards, should be able to DRY by using only one array
+
+function movePiece(firstCoord, secondCoord, checkingForPiece) {
+	let aWord = getCoordForOrigBoard(firstCoord) 
+	origBoard[aWord[1]][aWord[2]] = "    "
+	let bWord = getSecondCoordForOrigBoard(secondCoord, aWord[0])
+	origBoard[bWord[1]][bWord[2]] = aWord[0];
+}; //This "moves the pieces". It takes the coordinates of the pieces intial position replaces it with blank and pastes the piece onto the new coordinates
+
+function getSecondCoordForOrigBoard(secondCoord, checkingForPiece) {
+	for (i = 0; i < coordBoard.length; i++){
+		for(j = 0; j < coordBoard[i].length; j++){
+			if (secondCoord === coordBoard[i][j]){
+				let firstBCoordPosition = String(i) 
+				let secondBCoordPosition = String(j)
+				return [checkingForPiece, firstBCoordPosition, secondBCoordPosition]
+			} 
+		} 
+	}
+};
+
+function checkingForPiecesAtDestination(color, secondCoord) {
+	let coordPositions = getSecondCoordForOrigBoard(secondCoord)
+	let checkingForPieceColor = origBoard[coordPositions[1]][coordPositions[2]]
+	if(checkingForPieceColor[0] === color) {
+		throw "Invalid Move"
+	}
+}
 
 function getCoordForOrigBoard(firstCoord) {
 	for (i = 0; i < coordBoard.length; i++) {
 		for(j = 0; j < coordBoard[i].length; j++) {
 			if (firstCoord === coordBoard[i][j]) {
-				let firstCoordPosition = String(i); 
-				let secondCoordPosition = String(j);
-				let checkingForPiece = origBoard[firstCoordPosition][secondCoordPosition];
-				let pieceBeginningLetter = checkingForPiece[0];
-
-				if (checkingForPiece === "BlR" || "BlN" || "BlB" || "BlQ" || "BlK" || "BlP" || "WhP" || "WhR" || "WhN" || "WhB" || "WhK" || "WhQ"){
-					origBoard[firstCoordPosition][secondCoordPosition] = "   "
-				} else {
-					throw "Invalid Move"
-				};
-				return checkingForPiece
-				return pieceBeginningLetter
+				let firstACoordPosition = String(i); 
+				let secondACoordPosition = String(j);
+				let checkingForPiece = origBoard[firstACoordPosition][secondACoordPosition]
+				return [checkingForPiece, firstACoordPosition, secondACoordPosition]
 			}
 		}
-	}
-};
-
-
-function getSecondCoordForOrigBoard(secondCoord, checkingForPiece){
-	for (i = 0; i < coordBoard.length; i++){
-		for(j = 0; j < coordBoard[i].length; j++){
-			if (secondCoord === coordBoard[i][j]){
-				let firstCoordPosition = String(i) 
-				let secondCoordPosition = String(j)
-				origBoard[firstCoordPosition][secondCoordPosition] = checkingForPiece;
-			} 
-		} 
 	}
 };
 
@@ -117,13 +122,15 @@ function makeNewLetterTwoBackward(letter, num) {
 };
 
 function makeNewLetterXForward (letter, num, numberOfMoves) {
+
 	for (i = 0; i < lettersForwardRight.length; i++) {
 		if (letter === lettersForwardRight[i]) {
 			let newLetter = i + numberOfMoves;
 			let letter = lettersForwardRight[newLetter];
 			let secondCoord = letter + num;
-			return secondCoord;
+			return secondCoord;	
 		}
+
 	}
 };
 
@@ -138,486 +145,2361 @@ function makeNewLetterXBackward(letter, num, numberOfMoves) {
 	}
 };
 
-let pawnWhiteOne = {
-	color: "white",
-	pieceType: "pawn",
-	currentCoord: "E3",
-	oneMoveForward: function()  {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		let secondCoord = firstCoord[0] + num;
-		let pieceBeginningLetter = checkingForPiece[0];
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
+
+// checkForOtherPieces()
+
+
+
+let allPieces = {
+
+	"WhP1": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "A2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP2": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "B2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP3": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "C2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP4": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "D2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP5": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "E2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP6": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "F2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP7": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "G2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhP8": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "H2",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
 	},
 
-	twoPawnMoveForward: function()  {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 2;
-		let secondCoord = firstCoord[0] + num;
-		checkingCoordsNum(num, secondCoord)
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
+	"WhN1": {
+		color: "W",
+		pieceType: "knight",
+		currentCoord: "B1",
+		knightMoveTwoForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhN2": {
+		color: "W",
+		pieceType: "knight",
+		currentCoord: "G1",
+		knightMoveTwoForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
 	},
 
-	oneMoveBackward: function()  {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		let secondCoord = firstCoord[0] + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
+	"WhB1": {
+		color: "W",
+		pieceType: "bishop",
+		currentCoord: "C1",
+		bishopMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhB2": {
+		color: "W",
+		pieceType: "bishop",
+		currentCoord: "F1",
+		bishopMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhR1": {
+		color: "W",
+		pieceType: "rook",
+		currentCoord: "A1",
+		rookMoveForward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		rookMoveBackward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveRight: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveLeft: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"WhR2": {
+		color: "W",
+		pieceType: "rook",
+		currentCoord: "H1",
+		rookMoveForward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		rookMoveBackward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveRight: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveLeft: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
 	},
 
-	twoPawnMoveBackward: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 2;
-		let secondCoord = firstCoord[0] + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
+	"WhQ1": {
+		color: "W",
+		pieceType: "queen",
+		currentCoord: "D1",
+		queenMoveLeft: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveRight: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForward: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		queenMoveBackward: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"WhK1": {
+		color: "W",
+		pieceType: "king",
+		currentCoord: "E1",
+		kingMoveLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForwardRightDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForwardLeftDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackwardLeftDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackwardRightDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"BlP1": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "A8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP2": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "B8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP3": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "C8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP4": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "D8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP5": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "E8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP6": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "F8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP7": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "G8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlP8": {
+		color: "W",
+		pieceType: "pawn",
+		currentCoord: "H8",
+		oneMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		oneMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		twoPawnMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let secondCoord = firstCoord[0] + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"BlN1": {
+		color: "W",
+		pieceType: "knight",
+		currentCoord: "B8",
+		knightMoveTwoForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlN2": {
+		color: "W",
+		pieceType: "knight",
+		currentCoord: "G8",
+		knightMoveTwoForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord)
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneForwardRight: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownLeft: function () {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveOneDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterTwoFoward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+		knightMoveTwoDownLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 2;
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"BlB1": {
+		color: "W",
+		pieceType: "bishop",
+		currentCoord: "C8",
+		bishopMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlB2": {
+		color: "W",
+		pieceType: "bishop",
+		currentCoord: "F8",
+		bishopMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		bishopMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlR1": {
+		color: "W",
+		pieceType: "rook",
+		currentCoord: "A8",
+		rookMoveForward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		rookMoveBackward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveRight: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveLeft: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+	"BlR2": {
+		color: "W",
+		pieceType: "rook",
+		currentCoord: "H8",
+		rookMoveForward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		rookMoveBackward: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveRight: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		rookMoveLeft: function (numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"BlQ1": {
+		color: "W",
+		pieceType: "queen",
+		currentCoord: "D8",
+		queenMoveLeft: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveRight: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveBackwardLeftDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveBackwardRightDiagonal: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		queenMoveForward: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+
+		queenMoveBackward: function(numberOfMoves) {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - numberOfMoves;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
+	"BlK1": {
+		color: "W",
+		pieceType: "king",
+		currentCoord: "E8",
+		kingMoveLeft: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveRight: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = firstCoord[1];
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForwardRightDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForwardLeftDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackwardLeftDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneBackward(letter, num)
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackwardRightDiagonal: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = makeNewLetterOneForward(letter, num);
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveForward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) + 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		},
+
+		kingMoveBackward: function() {
+			const firstCoord = this.currentCoord;
+			let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
+			let num = parseInt(firstCoord[1]) - 1;
+			num = Math.abs(num);
+			let letter = firstCoord[0];
+			let secondCoord = letter + num;
+			checkingCoordsNum(num, secondCoord);
+			getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
+			this.currentCoord = secondCoord;
+			checkingForPiecesAtDestination(this.color,secondCoord)
+			movePiece(firstCoord, secondCoord, checkingForPiece)
+			return [firstCoord, this.currentCoord]
+		}
+	},
+
 };
-
-let knightWhiteOne = {
-	color: "white",
-	pieceType: "knight",
-	currentCoord: "B1",
-	knightMoveTwoForwardRight: function () {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 2;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneForward(letter, num)
-		checkingCoordsNum(num, secondCoord)
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveTwoForwardLeft: function () {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 2;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveOneForwardLeft: function () {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterTwoBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveOneForwardRight: function () {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterTwoFoward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveOneDownLeft: function () {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterTwoBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveOneDownRight: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterTwoFoward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveTwoDownRight: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 2;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneForward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-	knightMoveTwoDownLeft: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 2;
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneBackward(letter, num);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece);
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
-};
-
-let whiteBishopOne = {
-	color: "white",
-	pieceType: "bishop",
-	currentCoord: "C1",
-	bishopMoveForwardRightDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	bishopMoveForwardLeftDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	bishopMoveBackwardLeftDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	bishopMoveBackwardRightDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
-};
-
-let whiteRookOne = {
-	color: "white",
-	pieceType: "rook",
-	currentCoord: "A1",
-	rookMoveForward: function (numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-
-	rookMoveBackward: function (numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		console.log()
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	rookMoveRight: function (numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	rookMoveLeft: function (numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
-};
-
-let whiteQueen = {
-	color: "white",
-	pieceType: "queen",
-	currentCoord: "D1",
-	queenMoveLeft: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveRight: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveForwardRightDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveForwardLeftDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveBackwardLeftDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXBackward(letter, num, numberOfMoves);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveBackwardRightDiagonal: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterXForward (letter, num, numberOfMoves)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	queenMoveForward: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-
-	queenMoveBackward: function(numberOfMoves) {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - numberOfMoves;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
-};
-
-let whiteKing = {
-	color: "white",
-	pieceType: "king",
-	currentCoord: "E1",
-	kingMoveLeft: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveRight: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = firstCoord[1];
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneForward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveForwardRightDiagonal: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneForward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveForwardLeftDiagonal: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveBackwardLeftDiagonal: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneBackward(letter, num)
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveBackwardRightDiagonal: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = makeNewLetterOneForward(letter, num);
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveForward: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) + 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	},
-
-	kingMoveBackward: function() {
-		const firstCoord = this.currentCoord;
-		let checkingForPiece = 	getCoordForOrigBoard(firstCoord);
-		let num = parseInt(firstCoord[1]) - 1;
-		num = Math.abs(num);
-		let letter = firstCoord[0];
-		let secondCoord = letter + num;
-		checkingCoordsNum(num, secondCoord);
-		getSecondCoordForOrigBoard(secondCoord, checkingForPiece)
-		this.currentCoord = secondCoord;
-		return [firstCoord, this.currentCoord]
-	}
-}
-
-
-
 try {
-	
+	// console.log(allPieces["WhP"].twoPawnMoveForward())
+	console.log(allPieces["WhP1"].twoPawnMoveForward())
 }
 
 catch(err) {
 	console.log(err);
 }
 
+//create a for loop until reach numberofmoves given go one step forward and complete a check for same color, if so invalid, else continue to next
