@@ -54,7 +54,7 @@ function checkingForPiecesAtDestination(color, secondCoord) {
 	if(checkingForPieceColor[0] === color) {
 		throw "Invalid Move"
 	}
-}
+};
 
 function getCoordForOrigBoard(firstCoord) {
 	for (i = 0; i < coordBoard.length; i++) {
@@ -144,9 +144,6 @@ function makeNewLetterXBackward(letter, num, numberOfMoves) {
 		}
 	}
 };
-
-
-// checkForOtherPieces()
 
 
 
@@ -2493,9 +2490,10 @@ let allPieces = {
 	},
 
 };
+
 try {
 	// console.log(allPieces["WhP"].twoPawnMoveForward())
-	console.log(allPieces["WhP1"].twoPawnMoveForward())
+	console.log(allPieces["WhP5"].twoPawnMoveForward())
 }
 
 catch(err) {
