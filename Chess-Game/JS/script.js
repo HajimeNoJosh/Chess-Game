@@ -70,7 +70,7 @@ function getCoordForOrigBoard(firstCoord) {
 			}
 		}
 	}
-};
+}; 
 
 
 function checkingForPiecesAlongPathToDestinationRightForwardDiagonal(color, firstCoord, numberOfMoves) {
@@ -2635,8 +2635,6 @@ let allPieces = {
 
 
 try {
-	allPieces["WhP4"].twoPawnMoveForward()
-
 	// console.log(allPieces["BlP5"].twoPawnMoveBackward())
 	// console.log(allPieces["BlP6"].oneMoveBackward())
 	// console.log(allPieces["BlQ1"].queenMoveBackwardRightDiagonal(2))
