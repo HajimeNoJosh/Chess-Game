@@ -70,8 +70,9 @@ function getCoordForOrigBoard(firstCoord) {
 			}
 		}
 	}
-}; 
+}; //This takes the first coordinate defined by the Object pieces (which is also updated throughout). It finds its position on the coordBoard and finds its position on the origBoard, returning all of this information.
 
+// The next several functions check for pieces that can be found along a pieces "path". It takes its starting position, and based off the movement of the piece will add subtract array coords and do a check for the color of said pieces.
 
 function checkingForPiecesAlongPathToDestinationRightForwardDiagonal(color, firstCoord, numberOfMoves) {
 	let firstCoordPosition = getCoordForOrigBoard(firstCoord)
@@ -81,7 +82,7 @@ function checkingForPiecesAlongPathToDestinationRightForwardDiagonal(color, firs
 			throw "Invalid Move"
 		}
 	}
-};
+}; 
 
 
 function checkingForPiecesAlongPathToDestinationRightBackwardDiagonal(color, firstCoord, numberOfMoves) {
@@ -154,7 +155,7 @@ function checkingForPiecesAlongPathToDestinationUpBackward(color, firstCoord, nu
 		}
 	}
 };
-
+// This is the end of checking for pieces along the "path"
 
 function checkingCoordsNum(num, secondCoord) {
 	if (num > 8 || num < 1) {
@@ -162,8 +163,9 @@ function checkingCoordsNum(num, secondCoord) {
 	} else {
 		return secondCoord
 	}
-};
+}; // This function checks to make sure that the number is within the confines of the board. In other words it creates boundaries. 
 
+// The next four functions are for movement. They create letters based off letter arrays above.
 function makeNewLetterOneForward(letter, num) {
 	for (i = 0; i < lettersForwardRight.length; i++) {
 		if (letter === lettersForwardRight[i]) {
@@ -173,7 +175,7 @@ function makeNewLetterOneForward(letter, num) {
 			return secondCoord
 		}
 	}
-};
+}; 
 
 function makeNewLetterOneBackward(letter, num) {
 	for (i = 0; i < lettersForwardLeft.length; i++) {
@@ -208,13 +210,13 @@ function makeNewLetterTwoBackward(letter, num) {
 	}
 };
 
-function numbersForLetters(numberOfMoves){
-	let arrayNumberOfMoves = [];
-	for(i = 1; i <= numberOfMoves; i++){
-		arrayNumberOfMoves.push(i)
-	}
-	return arrayNumberOfMoves
-};
+// function numbersForLetters(numberOfMoves){
+// 	let arrayNumberOfMoves = [];
+// 	for(i = 1; i <= numberOfMoves; i++){
+// 		arrayNumberOfMoves.push(i)
+// 	}
+// 	return arrayNumberOfMoves
+// }; //I do not remember why I have this function. Lets see if its useful.
 
 
 function makeNewLetterXForward (letter, num, numberOfMoves) {
