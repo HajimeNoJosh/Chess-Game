@@ -165,7 +165,7 @@ function checkingCoordsNum(num, secondCoord) {
 	}
 }; // This function checks to make sure that the number is within the confines of the board. In other words it creates boundaries. 
 
-// The next four functions are for movement. They create letters based off letter arrays above.
+// The next four functions are for movement. They create letters based off letter arrays above. Mostly used for Knight movement.
 function makeNewLetterOneForward(letter, num) {
 	for (i = 0; i < lettersForwardRight.length; i++) {
 		if (letter === lettersForwardRight[i]) {
@@ -218,6 +218,7 @@ function makeNewLetterTwoBackward(letter, num) {
 // 	return arrayNumberOfMoves
 // }; //I do not remember why I have this function. Lets see if its useful.
 
+//The next two functions define the letter for pieces that can move an undefined number of spaces, ie bishops queens and rooks.
 
 function makeNewLetterXForward (letter, num, numberOfMoves) {
 	for (i = 0; i < lettersForwardRight.length; i++) {
@@ -243,6 +244,7 @@ function makeNewLetterXBackward(letter, num, numberOfMoves) {
 
 
 //pawns cannot take pieces going forward. Need to add that at some point
+
 let allPieces = {
 
 	"WhP1": {
